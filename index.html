@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flag It or Flex It! - Moderation Training Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fef9e7;
+            color: #2c3e50;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .game-area {
+            padding: 30px;
+        }
+
+        .round-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .round-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: #f8f9fa;
+            color: #495057;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .round-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .round-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-number {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .review-text {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 12px 20px;
+            border: 2px solid;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flex-btn {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .flex-btn:hover, .flex-btn.selected {
+            background: #27ae60;
+            color: white;
+        }
+
+        .watch-btn {
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+
+        .watch-btn:hover, .watch-btn.selected {
+            background: #f39c12;
+            color: white;
+        }
+
+        .flag-btn {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .flag-btn:hover, .flag-btn.selected {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .reveal-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reveal-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .reveal-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8f4fd;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .correct-answer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insight {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .score-board {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .next-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .game-complete {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .final-score {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: white;
+            color: #27ae60;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .options {
+                flex-direction: column;
+            }
+
+            .option-btn {
+                justify-content: center;
+            }
+
+            .round-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Flag It or Flex It! 🔍</h1>
+            <p>Train Your Moderation Skills with Travel Review Analysis</p>
+        </div>
+
+        <div class="score-board">
+            Score: <span id="score">0</span> / <span id="totalQuestions">0</span>
+        </div>
+
+        <div class="game-area">
+            <div class="round-selector">
+                <button class="round-btn active" onclick="selectRound(1)">Round 1: Basic Slang</button>
+                <button class="round-btn" onclick="selectRound(2)">Round 2: Hidden Meanings</button>
+                <button class="round-btn" onclick="selectRound(3)">Round 3: Sarcasm & Tone</button>
+            </div>
+
+            <div id="gameContent">
+                <!-- Game content will be inserted here -->
+            </div>
+
+            <div id="gameComplete" class="game-complete" style="display: none;">
+                <h2>🎉 Game Complete!</h2>
+                <div class="final-score">Final Score: <span id="finalScore">0</span>/<span id="finalTotal">0</span></div>
+                <p>Great job training your moderation skills!</p>
+                <button class="restart-btn" onclick="restartGame()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameData = {
+            1: [
+                {
+                    text: "The sauna turned into a meat market.",
+                    answer: "flag",
+                    insight: "Objectifies people; inappropriate sexual slang that creates an uncomfortable environment."
+                },
+                {
+                    text: "Stayed here for two nights, caught feelings.",
+                    answer: "flex",
+                    insight: "Harmless emotional slang meaning they developed positive feelings about the place."
+                },
+                {
+                    text: "That place was a hot mess express.",
+                    answer: "watch",
+                    insight: "Borderline disrespectful language; review tone needs context check for platform standards."
+                },
+                {
+                    text: "Bar staff had connections. Let's leave it at that.",
+                    answer: "flag",
+                    insight: "Implies drug or illegal access; vague but suspicious language that needs investigation."
+                },
+                {
+                    text: "Shower pressure was chef's kiss.",
+                    answer: "flex",
+                    insight: "Positive modern slang meaning 'perfect' - completely acceptable praise."
+                },
+                {
+                    text: "The hotel bar was full of thirst traps.",
+                    answer: "watch",
+                    insight: "Sexualized slang referring to attractive people; tone and context need review."
+                },
+                {
+                    text: "Check-in process was a dumpster fire.",
+                    answer: "watch",
+                    insight: "Sarcastic but common expression; depends on platform's tone guidelines."
+                },
+                {
+                    text: "Lobby smelled ethnic.",
+                    answer: "flag",
+                    insight: "Racially loaded and vague language that's inappropriate and potentially offensive."
+                },
+                {
+                    text: "Room service was next level.",
+                    answer: "flex",
+                    insight: "Harmless praise using modern slang - no moderation issues."
+                },
+                {
+                    text: "We heard plenty of late-night action through the walls.",
+                    answer: "watch",
+                    insight: "Sexual implication; not explicit but toeing the line of appropriate content."
+                }
+            ],
+            2: [
+                {
+                    text: "The massage package ended with a happy surprise.",
+                    answer: "flag",
+                    insight: "Implies sexual services which violates platform guidelines and legal standards."
+                },
+                {
+                    text: "The balcony wasn't the only thing with a great view.",
+                    answer: "watch",
+                    insight: "Suggestive double meaning that's borderline inappropriate; needs tone/context check."
+                },
+                {
+                    text: "Hot tub hours felt more like a dating app in real life.",
+                    answer: "watch",
+                    insight: "Suggests flirtatious behavior; context-dependent and may need review."
+                },
+                {
+                    text: "The staff knew where to find funny brownies.",
+                    answer: "flag",
+                    insight: "'Funny brownies' is slang for drug-laced edibles (cannabis) - clear violation."
+                },
+                {
+                    text: "Pretty sure the minibar came with weed gummies.",
+                    answer: "flag",
+                    insight: "Direct drug reference that clearly violates content guidelines."
+                },
+                {
+                    text: "It had that sweet 420 vibe all around the pool area.",
+                    answer: "flag",
+                    insight: "'420 vibe' directly refers to marijuana culture - needs moderation."
+                },
+                {
+                    text: "Locals were chill, especially after sharing some green tea.",
+                    answer: "watch",
+                    insight: "'Green tea' may be coded slang for marijuana; context check required."
+                },
+                {
+                    text: "The receptionist's accent was... a challenge.",
+                    answer: "flag",
+                    insight: "Biased comment with racial/ethnic undertones that's inappropriate."
+                },
+                {
+                    text: "It felt like the kind of place you go if you're not picky about who you're around.",
+                    answer: "watch",
+                    insight: "May imply discomfort around race/class; needs context check for discriminatory language."
+                },
+                {
+                    text: "The alley outside smelled like college dorms on 4/20.",
+                    answer: "flag",
+                    insight: "Drug implication referencing 4/20 (marijuana day); clear enough to warrant removal."
+                }
+            ],
+            3: [
+                {
+                    text: "The check-in process was smoother than a root canal.",
+                    answer: "watch",
+                    insight: "Heavy sarcasm that may violate platform decorum depending on community standards."
+                },
+                {
+                    text: "This hotel had all the ambiance of a waiting room at the DMV.",
+                    answer: "watch",
+                    insight: "Insulting comparison that's borderline; check for pattern of negative tone."
+                },
+                {
+                    text: "The concierge clearly got his training on YouTube.",
+                    answer: "watch",
+                    insight: "Sarcastic and disrespectful; consider escalation if part of pattern."
+                },
+                {
+                    text: "If you're into 3 AM arguments and broken bottles, this place is lit.",
+                    answer: "flag",
+                    insight: "Implies violence and dangerous situations; safety concern that needs removal."
+                },
+                {
+                    text: "The pool area was giving major sketchy vibes after dark.",
+                    answer: "watch",
+                    insight: "Vague safety concern; may need context or clarification about specific issues."
+                },
+                {
+                    text: "Breakfast buffet looked like it survived the apocalypse.",
+                    answer: "watch",
+                    insight: "Extreme negative language; borderline depending on platform's tone standards."
+                },
+                {
+                    text: "Staff moved slower than government bureaucracy.",
+                    answer: "flex",
+                    insight: "Common humorous comparison that's acceptable criticism without being offensive."
+                },
+                {
+                    text: "The elevator had more personality than the front desk staff.",
+                    answer: "watch",
+                    insight: "Personal attack on staff; borderline inappropriate depending on context."
+                },
+                {
+                    text: "Wi-Fi speed made dial-up look like lightning.",
+                    answer: "flex",
+                    insight: "Humorous exaggeration about service quality; acceptable criticism."
+                },
+                {
+                    text: "This place attracts a certain... demographic, if you know what I mean.",
+                    answer: "flag",
+                    insight: "Coded discriminatory language implying racial or class bias; inappropriate."
+                }
+            ]
+        };
+
+        let currentRound = 1;
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let gameCompleted = false;
+
+        function selectRound(round) {
+            currentRound = round;
+            currentQuestion = 0;
+            
+            // Update round button styles
+            document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= gameData[currentRound].length) {
+                if (currentRound < 3) {
+                    // Move to next round
+                    currentRound++;
+                    currentQuestion = 0;
+                    document.querySelectorAll('.round-btn').forEach((btn, index) => {
+                        btn.classList.remove('active');
+                        if (index + 1 === currentRound) btn.classList.add('active');
+                    });
+                } else {
+                    // Game complete
+                    showGameComplete();
+                    return;
+                }
+            }
+
+            const question = gameData[currentRound][currentQuestion];
+            const gameContent = document.getElementById('gameContent');
+            
+            gameContent.innerHTML = `
+                <div class="question-card">
+                    <div class="question-number">Round ${currentRound} - Question ${currentQuestion + 1}</div>
+                    <div class="review-text">"${question.text}"</div>
+                    
+                    <div class="options">
+                        <button class="option-btn flex-btn" onclick="selectAnswer('flex')">
+                            ✅ Flex It <small>(Harmless)</small>
+                        </button>
+                        <button class="option-btn watch-btn" onclick="selectAnswer('watch')">
+                            ⚠️ Watch It <small>(Borderline)</small>
+                        </button>
+                        <button class="option-btn flag-btn" onclick="selectAnswer('flag')">
+                            🚫 Flag It <small>(Violation)</small>
+                        </button>
+                    </div>
+                    
+                    <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()" disabled>
+                        Reveal Answer & Insight
+                    </button>
+                    
+                    <div id="answerSection" style="display: none;"></div>
+                </div>
+            `;
+
+            selectedAnswer = null;
+            updateTotalQuestions();
+        }
+
+        function selectAnswer(answer) {
+            selectedAnswer = answer;
+            
+            // Update button styles
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            // Enable reveal button
+            document.getElementById('revealBtn').disabled = false;
+        }
+
+        function revealAnswer() {
+            const question = gameData[currentRound][currentQuestion];
+            const isCorrect = selectedAnswer === question.answer;
+            
+            if (isCorrect) {
+                score++;
+                document.getElementById('score').textContent = score;
+            }
+
+            const answerEmoji = {
+                'flex': '✅ Flex It',
+                'watch': '⚠️ Watch It', 
+                'flag': '🚫 Flag It'
+            };
+
+            const answerSection = document.getElementById('answerSection');
+            answerSection.style.display = 'block';
+            
+            if (isCorrect) {
+                answerSection.innerHTML = `
+                    <div class="correct-answer">
+                        <span>Correct Answer: ${answerEmoji[question.answer]}</span>
+                        <span style="color: #27ae60;">✓ Correct!</span>
+                    </div>
+                    <button class="next-btn" onclick="nextQuestion()">Next Question →</button>
+                `;
+            } else {
+                answerSection.innerHTML = `
+                    <div class="correct-answer">
+                        <span>Correct Answer: ${answerEmoji[question.answer]}</span>
+                        <span style="color: #e74c3c;">✗ Incorrect</span>
+                    </div>
+                    <div class="insight">
+                        <strong>Moderation Insight:</strong> ${question.insight}
+                    </div>
+                    <button class="next-btn" onclick="nextQuestion()">Next Question →</button>
+                `;
+            }
+
+            // Disable reveal button
+            document.getElementById('revealBtn').disabled = true;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            displayQuestion();
+        }
+
+        function updateTotalQuestions() {
+            const total = Object.values(gameData).reduce((sum, round) => sum + round.length, 0);
+            document.getElementById('totalQuestions').textContent = total;
+        }
+
+        function showGameComplete() {
+            document.getElementById('gameContent').style.display = 'none';
+            document.getElementById('gameComplete').style.display = 'block';
+            
+            const total = Object.values(gameData).reduce((sum, round) => sum + round.length, 0);
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalTotal').textContent = total;
+        }
+
+        function restartGame() {
+            currentRound = 1;
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('gameContent').style.display = 'block';
+            document.getElementById('gameComplete').style.display = 'none';
+            
+            // Reset round buttons
+            document.querySelectorAll('.round-btn').forEach((btn, index) => {
+                btn.classList.remove('active');
+                if (index === 0) btn.classList.add('active');
+            });
+            
+            displayQuestion();
+        }
+
+        // Initialize game
+        displayQuestion();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95fa826b17254186',t:'MTc1MjU5NTYxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
